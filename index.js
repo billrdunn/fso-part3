@@ -12,6 +12,9 @@ const app = express()
 app.use(cors())
 
 // for deployment
+// whenever express gets and HTTP request it will first check if the build
+// directory contains a file corresponding to the request's address
+// if a correct file is found, express will return it
 app.use(express.static('build'))
 
 let entries = [
