@@ -94,6 +94,11 @@ app.post('/api/entries', (request, response) => {
             error: 'number mising'
         })
     }
+    if (entries.find(entry => entry.name === body.name)) {
+        return response.status(400).json({
+            error: 'name already in phonebook'
+        })
+    }
     
     const entry = {
         name: body.name,
