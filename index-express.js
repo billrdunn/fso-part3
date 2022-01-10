@@ -5,34 +5,6 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express()
 
-// implement our own middleware
-const requestLogger = (request, response, next) => {
-    console.log('Method: ', request.method)
-    console.log('Path:   ', request.path)
-    console.log('Body:   ', request.body)
-    console.log('---')
-
-    // yield control to next middleware
-    next()
-}
-
-// note we add this middleware AFTER the routes. It is only called
-// if none of the routes are called, so it catches unknown requests
-const unknownEndpoint = (request, response) => {
-    response.status(404).send({error: 'unknown endpoint'})
-}
-
-// activate the json-parser (middleware)
-// without this, request.body is undefined
-// the json-parser takes the JSON data of a request, 
-    // transforms it to a Javscript object, and attaches
-    // it to the |body| property of a request object, 
-    // before the route handler is called
-app.use(express.json())
-
-app.use(morgan('tiny'))
-// app.use(requestLogger)
-
 let entries = [
     {
         id: 1,
@@ -50,6 +22,41 @@ let entries = [
         number: 456735
     },
 ]
+
+
+// implement our own middleware
+const requestLogger = (request, response, next) => {
+    console.log('Method: ', request.method)
+    console.log('Path:   ', request.path)
+    console.log('Body:   ', request.body)
+    console.log('---')
+    
+    // yield control to next middleware
+    next()
+}
+
+// note we add this middleware AFTER the routes. It is only called
+// if none of the routes are called, so it catches unknown requests
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({error: 'unknown endpoint'})
+}
+
+// activate the json-parser (middleware)
+// without this, request.body is undefined
+// the json-parser takes the JSON data of a request, 
+// transforms it to a Javscript object, and attaches
+// it to the |body| property of a request object, 
+// before the route handler is called
+app.use(express.json())
+
+// create own morgan token and use it
+// note "app.use(morgan('tiny'))" is useful too
+morgan.token('data', (request, response) => {
+    return JSON.stringify(request.body)
+})
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
+// app.use(requestLogger)
+
 
 const generateId = () => {
     const maxId = entries.length > 0
