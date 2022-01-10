@@ -2,15 +2,36 @@
 
 // import |express| which is a function to create an express application
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
-// activate the json-parser
+// implement our own middleware
+const requestLogger = (request, response, next) => {
+    console.log('Method: ', request.method)
+    console.log('Path:   ', request.path)
+    console.log('Body:   ', request.body)
+    console.log('---')
+
+    // yield control to next middleware
+    next()
+}
+
+// note we add this middleware AFTER the routes. It is only called
+// if none of the routes are called, so it catches unknown requests
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({error: 'unknown endpoint'})
+}
+
+// activate the json-parser (middleware)
 // without this, request.body is undefined
 // the json-parser takes the JSON data of a request, 
     // transforms it to a Javscript object, and attaches
-    // it to the body property of a request object, 
+    // it to the |body| property of a request object, 
     // before the route handler is called
 app.use(express.json())
+
+app.use(morgan('tiny'))
+// app.use(requestLogger)
 
 let entries = [
     {
@@ -108,9 +129,10 @@ app.post('/api/entries', (request, response) => {
 
     entries = entries.concat(entry)
 
-    console.log('request.headers :>> ', request.headers);
     response.json(entry)
 })
+
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {
