@@ -52,6 +52,16 @@ app.get('/api/entries', (request, response) => {
     response.json(entries)
 })
 
+app.get('/info', (request, response) => {
+    response.send(`
+        <div>
+        Phonebook has info for ${entries.length} people
+        </div>
+        <div>
+        ${new Date()}
+        </div>`)
+})
+
 app.get('/api/entries/:id', (request, response) => {
     const id = Number(request.params.id)
     const entry = entries.find(note => note.id === id)
