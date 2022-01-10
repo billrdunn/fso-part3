@@ -11,6 +11,9 @@ const app = express()
 
 app.use(cors())
 
+// for deployment
+app.use(express.static('build'))
+
 let entries = [
     {
         id: 1,
