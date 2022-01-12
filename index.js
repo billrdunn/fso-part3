@@ -26,22 +26,6 @@ app.use(express.json())
 
 // Implement my own middlewares:
 
-// Express error handlers are middleware that are defined with a function
-// that accepts four parameters
-const errorHandler = (error, request, response, next) => {
-    // TIP: when dealing with promises, always add error and exception handling
-    // and print the object that caused the exception to the console
-    console.error(error.message)
-
-    if (error.name === 'CastError') {
-        return response.status(400).send({error: 'malformatted id'})
-    } 
-    else if (error.name === 'ValidationError') {
-        return response.status(400).send({error: error.message})
-    }
-
-    next(error)
-}
 
 // const requestLogger = (request, response, next) => {
 //     console.log('Method: ', request.method)
@@ -67,8 +51,7 @@ morgan.token('data', (request, response) => {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 // app.use(requestLogger)
-// This has to be the last loaded middleware
-app.use(errorHandler)
+
 
 // Routes:
 
@@ -177,6 +160,28 @@ app.put('/api/entries/:id', (request, response, next) => {
 
 // Must be loaded after routes!
 app.use(unknownEndpoint)
+
+
+// Express error handlers are middleware that are defined with a function
+// that accepts four parameters
+const errorHandler = (error, request, response, next) => {
+    // TIP: when dealing with promises, always add error and exception handling
+    // and print the object that caused the exception to the console
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({error: 'malformatted id'})
+    } 
+    else if (error.name === 'ValidationError') {
+        console.log('error.message :>> ', error.message);
+        return response.status(400).send({error: error.message})
+    }
+
+    next(error)
+}
+
+// This has to be the last loaded middleware
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

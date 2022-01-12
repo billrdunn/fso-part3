@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+// Include 3rd-party validator
+const uniqueValidator = require('mongoose-unique-validator')
 
 const url = process.env.MONGODB_URI
 
@@ -17,13 +19,18 @@ const entrySchema = new mongoose.Schema({
     // Can also create custom validators 
     name: {
         type: String,
-        required: true
+        minLength: 3,
+        required: true,
+        unique: true
     },
     number: {
         type: String,
-        required: true
+        minLength: 5,
+        required: true,
+        unique: true
     }
 })
+entrySchema.plugin(uniqueValidator)
 
 // Modify the toJSON() method of the schema, which is used on all instances of models with this schema
 // Note that even though _id property looks like a string, it's actually an object
