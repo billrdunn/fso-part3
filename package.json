@@ -10,7 +10,8 @@
     "build:ui": "rm -rf build && cd ../fullstackopen/part2/phonebook && npm run build && cp -r build ../../../fso-part3",
     "deploy": "git push heroku main",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
-    "logs:prod": "heroku logs --tail"
+    "logs:prod": "heroku logs --tail",
+    "lint": "eslint ."
   },
   "author": "William Dunn",
   "license": "ISC",
@@ -24,6 +25,12 @@
     "yarn": "^1.22.17"
   },
   "devDependencies": {
+    "eslint": "^8.6.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "nodemon": "^2.0.15"
   }
 }
