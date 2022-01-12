@@ -13,8 +13,16 @@ mongoose.connect(url)
     })
 
 const entrySchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    // "required" is a built-in validator provided by Mongoose
+    // Can also create custom validators 
+    name: {
+        type: String,
+        required: true
+    },
+    number: {
+        type: String,
+        required: true
+    }
 })
 
 // Modify the toJSON() method of the schema, which is used on all instances of models with this schema

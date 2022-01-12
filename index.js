@@ -35,6 +35,9 @@ const errorHandler = (error, request, response, next) => {
 
     if (error.name === 'CastError') {
         return response.status(400).send({error: 'malformatted id'})
+    } 
+    else if (error.name === 'ValidationError') {
+        return response.status(400).send({error: error.message})
     }
 
     next(error)
@@ -120,15 +123,15 @@ app.delete('/api/entries/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-app.post('/api/entries', (request, response) => {
+app.post('/api/entries', (request, response, next) => {
     const body = request.body
 
-    if (!body.name) {
-        return response.status(400).json({error: 'name missing'})
-    }
-    if (!body.number) {
-        return response.status(400).json({error: 'number missing'})
-    }
+    // if (!body.name) {
+    //     return response.status(400).json({error: 'name missing'})
+    // }
+    // if (!body.number) {
+    //     return response.status(400).json({error: 'number missing'})
+    // }
 
     const entry = new Entry({
         name: body.name,
@@ -138,9 +141,21 @@ app.post('/api/entries', (request, response) => {
     // The response is sent inside of the callback function for the save operation. 
     // This ensures that the response is sent only if the operation succeeded.
     // The data sent back in the response is the new entry, formatted with the toJSON method
-    entry.save().then(savedEntry => {
-        response.json(savedEntry)
-    })
+    entry.save()
+        // Mongoose returns a savedEntry object and we format it
+        // (note this is just to illustrate promise chaining and is not needed here)
+        .then(savedEntry => {
+            return savedEntry.toJSON()
+        })
+        // The then method of a promise also returns a promise
+        .then(savedAndFormattedEntry => {
+            response.json(savedAndFormattedEntry)
+        })
+        .catch(error => next(error))
+
+    // Multiple then methods is an example of promise chaining
+    // It does not provide much benefit here, but it is useful
+    // when many asynchronous operations need to be done in sequence.
 })
 
 app.put('/api/entries/:id', (request, response, next) => {
