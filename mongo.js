@@ -1,3 +1,6 @@
+// This file has been split into multiple files so is now redundant!
+// But it's useful to make files like these when developing
+
 const mongoose = require('mongoose')
 
 if (process.argv.length < 3) {
